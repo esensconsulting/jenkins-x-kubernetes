@@ -1,0 +1,51 @@
+extends:
+  file: ../pipeline.yaml
+agent:
+  image: gcr.io/infra-esens/builder-flutter:0.0.9
+env:
+- name: FIREBASE_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: REPLACE_ME_APP_NAME-credentials
+      key: token
+- name: APP_ID_FIREBASE
+  valueFrom:
+    secretKeyRef:
+      name: REPLACE_ME_APP_NAME-credentials
+      key: id
+pipelines:
+  pullRequest:
+    pipeline:
+      stages:
+      - name: build
+        agent:
+          image: gcr.io/infra-esens/builder-flutter:0.0.9
+        steps:
+        - sh: flutter build apk --build-name=$PREVIEW_VERSION
+          name: apk
+      - name: deploy
+        agent:
+          image: gcr.io/infra-esens/builder-firebase:0.0.6
+        steps:
+        - sh: firebase use --token $FIREBASE_TOKEN
+          name: configure-firebase
+        - sh: firebase appdistribution:distribute build/app/outputs/apk/release/app-release.apk --app $APP_ID_FIREBASE --release-notes $PREVIEW_VERSION --groups qa-team
+          name: bundle
+  release:
+    pipeline:
+      stages:
+      - name: build
+        agent:
+          image: gcr.io/infra-esens/builder-flutter:0.0.9
+        steps:
+        - sh: flutter build appbundle --build-name=$VERSION
+          name: bundle
+      - name: deploy
+        agent:
+          image: gcr.io/infra-esens/builder-firebase:0.0.6
+        steps:
+        - sh: firebase use --token $FIREBASE_TOKEN
+          name: configure-firebase
+        - sh: firebase appdistribution  :distribute build/app/outputs/apk/release/app-release.apk --app $APP_ID_FIREBASE --release-notes $VERSION --groups qa-team
+          name: bundle
+

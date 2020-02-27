@@ -1,0 +1,4 @@
+extends:
+  import: classic
+  file: pipeline.yaml
+

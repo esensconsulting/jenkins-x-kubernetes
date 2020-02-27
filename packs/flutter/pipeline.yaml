@@ -1,4 +1,4 @@
 extends:
   import: classic
-  file: pipeline.yaml
+  file: flutter/pipeline.yaml
 

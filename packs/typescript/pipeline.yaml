@@ -2,4 +2,4 @@ extends:
   file: ../javascript/pipeline.yaml
 agent:
   label: jenkins-nodejs
-  container: builder-nodejs12x
+  image: nodejs12x

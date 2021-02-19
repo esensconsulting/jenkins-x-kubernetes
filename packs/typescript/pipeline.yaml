@@ -2,4 +2,4 @@ extends:
   file: ../javascript/pipeline.yaml
 agent:
   label: jenkins-nodejs
-  image: nodejs12x
+  image: nodejs14x
